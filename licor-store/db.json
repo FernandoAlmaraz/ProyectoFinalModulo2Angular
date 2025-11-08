@@ -41,16 +41,16 @@
     },
     {
       "id": "4",
-      "nombre": "Coca Machicada Premium",
+      "nombre": "Coca Machucada Premium",
+      "marca": "Tradición Andina",
       "categoria": "Productos Tradicionales",
+      "presentacion": "Paquete 100g",
       "descripcion": "Hoja de coca natural procesada según tradición ancestral. Producto 100% boliviano.",
       "precio": 25,
       "descuento": 0,
       "stock": 65,
       "stockMinimo": 15,
-      "marca": "Tradición Andina",
-      "presentacion": "Paquete 100g",
-      "imagen": "https://images.unsplash.com/photo-1585241645927-c7a8e5840c42?w=800"
+      "imagen": "https://scontent.fcbb2-2.fna.fbcdn.net/v/t1.6435-9/188833102_122093800029590_561964693005220790_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_ohc=kCZMa6DjWDYQ7kNvwFUKYHZ&_nc_oc=AdkXDjEOwCwsEB4y7L1CYZ_3Lp0gc137-dO9p4cOEZGvgTvWjE3koVcQXkCq54e06C_Ekuy51xpPSnuWm6VFZm7B&_nc_zt=23&_nc_ht=scontent.fcbb2-2.fna&_nc_gid=Vkhq4A1nOIBzsFiND_c6bw&oh=00_Afj1QyU3zkfVO3PPRJKQQ7T0c-UlXKgxS3cL7coCV0mjbA&oe=6935D38E"
     },
     {
       "id": "5",

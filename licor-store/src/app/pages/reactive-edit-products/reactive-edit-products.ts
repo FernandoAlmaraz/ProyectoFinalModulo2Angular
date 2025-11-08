@@ -152,10 +152,13 @@ export default class ReactiveEditProducts {
   }
 
   onPreview() {
-    console.log('Vista previa del formulario:', this.stockForm.value);
-    console.log('Válido:', this.stockForm.valid);
-    console.log('ID del producto:', this.productId());
-    alert('Vista previa - Revisa la consola');
+    const imagenUrl = this.stockForm.get('imagen')?.value;
+    if (imagenUrl && this.isValidUrl(imagenUrl)) {
+      this.imagePreview.set(''); 
+      setTimeout(() => {
+        this.imagePreview.set(imagenUrl); 
+      }, 100);
+    }
   }
 
   hasError(fieldName: string): boolean {
