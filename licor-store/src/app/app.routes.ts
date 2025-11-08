@@ -14,6 +14,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/reactive-add-products/reactive-add-products'), 
     },
     {
+        path: 'editar/:id',
+        loadComponent: () => import('./pages/reactive-edit-products/reactive-edit-products'), 
+    },
+    {
         path: '**',
         redirectTo: ''
     }

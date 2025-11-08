@@ -1,0 +1,69 @@
+{
+  "productos": [
+    {
+      "id": "1",
+      "nombre": "Cerveza Paceña",
+      "marca": "CBN",
+      "categoria": "Cervezas",
+      "presentacion": "Botella 620ml",
+      "descripcion": "Cerveza tipo Lager, elaborada con los mejores ingredientes. Sabor característico y refrescante.",
+      "precio": 8.5,
+      "descuento": 10,
+      "stock": 0,
+      "stockMinimo": 50,
+      "imagen": "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800"
+    },
+    {
+      "id": "2",
+      "nombre": "Singani San Pedro",
+      "categoria": "Licores",
+      "descripcion": "Destilado de uva moscatel de Alejandría. Producto boliviano de alta calidad con denominación de origen.",
+      "precio": 85,
+      "descuento": 0,
+      "stock": 45,
+      "stockMinimo": 20,
+      "marca": "San Pedro",
+      "presentacion": "Botella 750ml",
+      "imagen": "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=800"
+    },
+    {
+      "id": "3",
+      "nombre": "Cigarrillos Mallboro",
+      "categoria": "Cigarrillos",
+      "descripcion": "Cigarrillos suaves con filtro. Una de las marcas más populares en Bolivia.",
+      "precio": 18,
+      "descuento": 5,
+      "stock": 180,
+      "stockMinimo": 30,
+      "marca": "Hamilton",
+      "presentacion": "Cajetilla 20 unid.",
+      "imagen": "https://images.rappi.com.ar/products/70b606c9-aa73-4e88-9128-4ba597e289b2.png?e=webp&q=80&d=130x130"
+    },
+    {
+      "id": "4",
+      "nombre": "Coca Machicada Premium",
+      "categoria": "Productos Tradicionales",
+      "descripcion": "Hoja de coca natural procesada según tradición ancestral. Producto 100% boliviano.",
+      "precio": 25,
+      "descuento": 0,
+      "stock": 65,
+      "stockMinimo": 15,
+      "marca": "Tradición Andina",
+      "presentacion": "Paquete 100g",
+      "imagen": "https://images.unsplash.com/photo-1585241645927-c7a8e5840c42?w=800"
+    },
+    {
+      "id": "5",
+      "nombre": "Coca Cola",
+      "marca": "Coca Cola",
+      "categoria": "Bebidas",
+      "presentacion": "Botella 2L",
+      "descripcion": "La clásica bebida refrescante de cola. Perfecta para cualquier ocasión.",
+      "precio": 7,
+      "descuento": 15,
+      "stock": 320,
+      "stockMinimo": 100,
+      "imagen": "https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800"
+    }
+  ]
+}

@@ -1,25 +1,28 @@
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { StockService } from '../../services/stockService';
-import { Router } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { Product } from '../../interface/product';
 
 @Component({
-  selector: 'app-reactive-add-products',
-  imports: [ReactiveFormsModule],
-  templateUrl: './reactive-add-products.html',
-  styleUrl: './reactive-add-products.css',
+  selector: 'app-reactive-edit-products',
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './reactive-edit-products.html',
+  styleUrl: './reactive-edit-products.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class ReactiveAddProducts { 
+export default class ReactiveEditProducts {
 
   private fb = inject(FormBuilder);
   private stockService = inject(StockService);
   private router = inject(Router);
-  
+  private route = inject(ActivatedRoute);
+
   submitted = signal<boolean>(false);
   imagePreview = signal<string>('https://via.placeholder.com/300x300?text=Sin+Imagen');
   isLoading = signal<boolean>(false);
+  productId = signal<number | null>(null);
 
   public stockForm = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/.*\S.*/)]],
@@ -33,7 +36,7 @@ export default class ReactiveAddProducts {
     stockMinimo: [0, [Validators.required, Validators.min(0)]],
     imagen: ['', [Validators.pattern(/^https?:\/\/.+/)]]
   });
-  
+
   constructor() {
     effect(() => {
       const imagenUrl = this.stockForm.get('imagen')?.value;
@@ -41,6 +44,51 @@ export default class ReactiveAddProducts {
         this.imagePreview.set(imagenUrl);
       } else if (!imagenUrl) {
         this.imagePreview.set('https://via.placeholder.com/300x300?text=Sin+Imagen');
+      }
+    });
+  }
+
+  ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    
+    if (id) {
+      this.productId.set(+id);
+      this.loadProduct(+id);
+    } else {
+      alert('❌ No se encontró el ID del producto');
+      this.router.navigate(['/stock']);
+    }
+  }
+
+  loadProduct(id: number) {
+    this.isLoading.set(true);
+    
+    this.stockService.getProduct(id).subscribe({
+      next: (producto) => {
+        console.log('✅ Producto cargado:', producto);
+        this.stockForm.patchValue({
+          nombre: producto.nombre,
+          marca: producto.marca,
+          categoria: producto.categoria,
+          presentacion: producto.presentacion,
+          descripcion: producto.descripcion,
+          precio: producto.precio,
+          descuento: producto.descuento,
+          stock: producto.stock,
+          stockMinimo: producto.stockMinimo,
+          imagen: producto.imagen
+        });
+        if (producto.imagen) {
+          this.imagePreview.set(producto.imagen);
+        }
+
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        console.error('❌ Error al cargar producto:', error);
+        alert('❌ Error al cargar el producto. Verifica que exista.');
+        this.isLoading.set(false);
+        this.router.navigate(['/stock']);
       }
     });
   }
@@ -53,19 +101,19 @@ export default class ReactiveAddProducts {
       return false;
     }
   }
-  
+
   onSubmit() {
     this.submitted.set(true);
 
-    if (this.stockForm.valid) {
+    if (this.stockForm.valid && this.productId()) {
       this.isLoading.set(true);
 
       const cleanNombre = (this.stockForm.value.nombre ?? '').trim();
       const cleanMarca = (this.stockForm.value.marca ?? '').trim();
       const cleanPresentacion = (this.stockForm.value.presentacion ?? '').trim();
 
-      const nuevoProducto: Product = {
-        id: Math.floor(Math.random() * 100),
+      const productoActualizado: Product = {
+        id: this.productId()!,
         nombre: cleanNombre,
         marca: cleanMarca,
         categoria: this.stockForm.value.categoria!,
@@ -77,31 +125,18 @@ export default class ReactiveAddProducts {
         stockMinimo: this.stockForm.value.stockMinimo!,
         imagen: this.stockForm.value.imagen || ''
       };
-      this.stockService.createProduct(nuevoProducto).subscribe({
+      this.stockService.updateProduct(this.productId()!, productoActualizado).subscribe({
         next: (response) => {
-          console.log('✅ Producto creado exitosamente:', response);
-          alert('✅ Producto agregado correctamente');
-          
-          this.stockForm.reset({
-            nombre: '',
-            marca: '',
-            categoria: '',
-            presentacion: '',
-            descripcion: '',
-            precio: 0,
-            descuento: 0,
-            stock: 0,
-            stockMinimo: 0,
-            imagen: ''
-          });
+          console.log('✅ Producto actualizado exitosamente:', response);
+          alert('✅ Producto actualizado correctamente');
           
           this.submitted.set(false);
           this.isLoading.set(false);
           this.router.navigate(['/stock']);
         },
         error: (error) => {
-          console.error('❌ Error al crear producto:', error);
-          alert('❌ Error al agregar el producto. Verifica que JSON Server esté corriendo en http://localhost:3000');
+          console.error('❌ Error al actualizar producto:', error);
+          alert('❌ Error al actualizar el producto. Verifica que JSON Server esté corriendo.');
           this.isLoading.set(false);
         }
       });
@@ -119,6 +154,7 @@ export default class ReactiveAddProducts {
   onPreview() {
     console.log('Vista previa del formulario:', this.stockForm.value);
     console.log('Válido:', this.stockForm.valid);
+    console.log('ID del producto:', this.productId());
     alert('Vista previa - Revisa la consola');
   }
 
@@ -173,4 +209,6 @@ export default class ReactiveAddProducts {
     };
     return messages[fieldName] || 'Este campo es requerido';
   }
-}
+
+
+ }

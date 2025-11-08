@@ -1,1 +1,203 @@
-<p>reactive-products-list works!</p>,
+<div class="stock-container">
+  <!-- Header -->
+  <div class="stock-header">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="mb-1">
+          <i class="bi bi-boxes me-2"></i>
+          Gestión de Stock
+        </h2>
+        <p class="text-muted mb-0">Administra tu inventario de productos</p>
+      </div>
+      <button class="btn btn-primary" routerLink="/agregar">
+        <i class="bi bi-plus-circle me-2"></i>
+        Agregar Producto
+      </button>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-white">
+            <i class="bi bi-search"></i>
+          </span>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Buscar productos..."
+            [value]="searchTerm()"
+            (input)="onSearchChange($event)">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" [value]="filterCategoria()" (change)="onCategoriaChange($event)">
+          <option value="">Todas las categorías</option>
+          <option value="Cervezas">Cervezas</option>
+          <option value="Licores">Licores</option>
+          <option value="Cigarrillos">Cigarrillos</option>
+          <option value="Productos Tradicionales">Productos Tradicionales</option>
+          <option value="Bebidas">Bebidas</option>
+          <option value="Vinos">Vinos</option>
+          <option value="Snacks">Snacks</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" [value]="filterStock()" (change)="onStockChange($event)">
+          <option value="">Todos los estados</option>
+          <option value="disponible">En Stock</option>
+          <option value="bajo">Stock Bajo</option>
+          <option value="agotado">Sin Stock</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <div class="stat-card bg-primary">
+          <div class="stat-icon">
+            <i class="bi bi-box-seam"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ totalProductos() }}</h3>
+            <p>Total Productos</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card bg-success">
+          <div class="stat-icon">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ productosDisponibles() }}</h3>
+            <p>En Stock</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card bg-warning">
+          <div class="stat-icon">
+            <i class="bi bi-exclamation-triangle"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ productosStockBajo() }}</h3>
+            <p>Stock Bajo</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card bg-danger">
+          <div class="stat-icon">
+            <i class="bi bi-x-circle"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ productosAgotados() }}</h3>
+            <p>Agotados</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3 text-muted">Cargando productos...</p>
+    </div>
+  }
+
+  <!-- Products Table -->
+  @if (!isLoading()) {
+    <div class="table-container">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Producto</th>
+              <th>Categoría</th>
+              <th>Marca</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (producto of productosFiltrados(); track producto.id) {
+              <tr>
+                <td class="align-middle">
+                  <img [src]="producto.imagen" 
+                       [alt]="producto.nombre" 
+                       class="product-thumbnail"
+                       (error)="$event.target.src='https://via.placeholder.com/60x60?text=Sin+Imagen'">
+                </td>
+                <td class="align-middle">
+                  <div class="product-info">
+                    <strong>{{ producto.nombre }}</strong>
+                    <small class="d-block text-muted">{{ producto.presentacion }}</small>
+                  </div>
+                </td>
+                <td class="align-middle">
+                  <span class="badge-categoria">{{ producto.categoria }}</span>
+                </td>
+                <td class="align-middle">{{ producto.marca }}</td>
+                <td class="align-middle">
+                  <strong class="text-primary">Bs. {{ producto.precio }}</strong>
+                  @if (producto.descuento > 0) {
+                    <span class="text-muted d-block">
+                      -{{ producto.descuento }}%
+                    </span>
+                  }
+                </td>
+                <td class="align-middle">
+                  <div class="stock-info">
+                    <strong>{{ producto.stock }}</strong>
+                    <small class="d-block text-muted">Min: {{ producto.stockMinimo }}</small>
+                  </div>
+                </td>
+                <td class="align-middle">
+                  <span class="badge" [ngClass]="getStockBadgeClass(producto)">
+                    {{ getStockStatus(producto) }}
+                  </span>
+                </td>
+               <!-- Y en <tbody> cambia la columna de acciones -->
+              <td class="align-middle">
+                <div class="d-flex gap-2 justify-content-center">
+                  <button 
+                    class="btn btn-sm btn-primary"
+                    [routerLink]="['/editar', producto.id]"
+                    title="Editar producto">
+                    <i class="bi bi-pencil-fill me-1"></i>
+                    Editar
+                  </button>
+                  <button 
+                    class="btn btn-sm btn-danger"
+                    (click)="deleteProduct(producto)"
+                    title="Eliminar producto">
+                    <i class="bi bi-trash-fill me-1"></i>
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="9" class="text-center py-5">
+                  <i class="bi bi-inbox display-1 text-muted"></i>
+                  <h5 class="mt-3 text-muted">No se encontraron productos</h5>
+                  <p class="text-muted">Intenta con otros filtros o agrega nuevos productos</p>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>
